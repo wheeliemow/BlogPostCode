@@ -1,0 +1,33 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red38\green38\blue38;\red193\green221\blue242;}
+\margl1440\margr1440\vieww19040\viewh10800\viewkind0
+\deftab720
+\pard\pardeftab720
+
+\f0\fs26 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2  using (MyDataContext context = new MyDataContext (ConnectionManager.GetConnectionString()))\
+                \{\
+                    var dt = context.DataTable.Select(r => r);\
+\
+                    using (XLWorkbook workbook = new XLWorkbook())\
+                    \{\
+                        IXLWorksheet sheet = workbook.Worksheets.Add("Sheet 1");\
+                        sheet.Cell(1, 1).InsertTable(dt);\
+                        sheet.Columns().AdjustToContents();\
+\
+                        MemoryStream mStream = new MemoryStream();\
+\
+                        workbook.SaveAs(mStream);\
+\
+                        string fileName = "MyExcelFile-" + DateTime.Now.ToShortDateString() + ".xlsx";\
+\
+                        mStream.WriteTo(Response.OutputStream);\
+                        mStream.Close();\
+\
+                        Response.AddHeader("content-disposition", "attachment;  filename=" + fileName);\
+\
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();\
+                    \}\
+                \}\
+}
